@@ -1,0 +1,117 @@
+# OS-generated files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Editors and IDEs
+.idea/
+.vscode/
+*.code-workspace
+*.swp
+*.swo
+*~
+
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*.pyd
+*.pyo
+*.pyc.*
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.pyre/
+.hypothesis/
+.tox/
+.nox/
+.ipynb_checkpoints/
+
+# Virtual environments and local Python config
+.venv/
+venv/
+env/
+.direnv/
+.envrc
+
+# Environment files and local secrets
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.pem
+*.key
+*.crt
+*.cer
+*.der
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.kubeconfig
+id_rsa
+id_rsa.pub
+id_ed25519
+id_ed25519.pub
+secrets/
+credentials/
+
+# Build and packaging artifacts
+build/
+dist/
+target/
+*.egg
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+*.whl
+
+# Test, coverage, benchmark, and profiling outputs
+.coverage
+.coverage.*
+coverage/
+htmlcov/
+.benchmarks/
+profiles/
+*.prof
+*.log
+*.tmp
+*.temp
+*.bak
+*.orig
+verify-*.log
+
+# Local databases and caches
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+
+# JavaScript and frontend tooling
+node_modules/
+.vite/
+
+# Project-local tooling and wrappers
+.codex/
+.repo/
+.repo/hooks/
+.repo/wrappers/
+.repowizard/
+.repowizard/legacy-hooks*
+.local/
+
+# Local/generated helper scripts or artifacts
+artifacts/
+git-autosnap.sh
+gitleaks-prepush.json
+pre-commit
+pre-commit 2
+pre-push
+pre-push 2
+post-commit
+!.githooks/
+!.githooks/pre-commit
+!.githooks/pre-push
+
+# Ignore local workflow snapshots created by helper tooling
+.github/workflows/autosnap-lite.yml
+.github/workflows/initseed-heavy.yml

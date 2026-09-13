@@ -1,0 +1,30 @@
+minimum_pre_commit_version: "3.8.0"
+repos:
+  - repo: local
+    hooks:
+      - id: pre-push-check
+        name: pre-push-check
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
+        entry: ./scripts/check.sh
+      - id: format-check
+        name: format-check
+        language: system
+        pass_filenames: false
+        entry: bash -lc 'py="$(./scripts/bootstrap_venv.sh)"; "${py}" -m ruff format --check TSP_GOOGLE_MAPS tests scripts/*.py'
+      - id: lint-check
+        name: lint-check
+        language: system
+        pass_filenames: false
+        entry: bash -lc 'py="$(./scripts/bootstrap_venv.sh)"; "${py}" -m ruff check TSP_GOOGLE_MAPS tests scripts/*.py'
+      - id: typecheck
+        name: typecheck
+        language: system
+        pass_filenames: false
+        entry: bash -lc 'py="$(./scripts/bootstrap_venv.sh)"; "${py}" -m mypy --config-file pyproject.toml'
+      - id: repo-hygiene
+        name: repo-hygiene
+        language: system
+        pass_filenames: false
+        entry: ./scripts/repo_hygiene.sh

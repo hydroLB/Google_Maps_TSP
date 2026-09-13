@@ -1,0 +1,116 @@
+name: ci
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version-file: ".python-version"
+          cache: pip
+          cache-dependency-path: |
+            requirements.lock
+            requirements-dev.lock
+      - name: Prepare artifacts directory
+        run: mkdir -p artifacts
+      - name: Install dependencies
+        run: |
+          set -euo pipefail
+          ./scripts/bootstrap_venv.sh >/dev/null
+      - name: Format check
+        run: |
+          set -euo pipefail
+          py="$(./scripts/bootstrap_venv.sh)"
+          "${py}" -m ruff format --check TSP_GOOGLE_MAPS tests scripts/*.py 2>&1 | tee artifacts/format-check.log
+      - name: Lint
+        run: |
+          set -euo pipefail
+          py="$(./scripts/bootstrap_venv.sh)"
+          "${py}" -m ruff check TSP_GOOGLE_MAPS tests scripts/*.py 2>&1 | tee artifacts/lint.log
+      - name: Type check
+        run: |
+          set -euo pipefail
+          py="$(./scripts/bootstrap_venv.sh)"
+          "${py}" -m mypy --config-file pyproject.toml 2>&1 | tee artifacts/type-check.log
+      - name: Lockfile hygiene
+        run: |
+          set -euo pipefail
+          ./scripts/lockfile_hygiene.sh 2>&1 | tee artifacts/lockfile-hygiene.log
+      - name: Repo hygiene guard
+        run: |
+          set -euo pipefail
+          ./scripts/repo_hygiene.sh 2>&1 | tee artifacts/repo-hygiene.log
+      - name: Test
+        run: |
+          set -euo pipefail
+          CI_ARTIFACTS_DIR=artifacts ./scripts/test.sh 2>&1 | tee artifacts/test.log
+      - name: Build
+        run: |
+          set -euo pipefail
+          ./scripts/build.sh 2>&1 | tee artifacts/build.log
+      - name: Benchmark smoke
+        run: |
+          set -euo pipefail
+          CI_ARTIFACTS_DIR=artifacts ./scripts/bench.sh 2>&1 | tee artifacts/benchmark.log
+      - name: Security scan (bandit)
+        run: |
+          set -euo pipefail
+          py="$(./scripts/bootstrap_venv.sh)"
+          "${py}" -m bandit -q -r TSP_GOOGLE_MAPS 2>&1 | tee artifacts/bandit.log
+      - name: Dependency audit
+        run: |
+          set -euo pipefail
+          py="$(./scripts/bootstrap_venv.sh)"
+          "${py}" -m pip_audit --strict --require-hashes --disable-pip -r requirements.lock 2>&1 | tee artifacts/pip-audit-runtime.log
+          "${py}" -m pip_audit --strict --require-hashes --disable-pip -r requirements-dev.lock 2>&1 | tee artifacts/pip-audit-development.log
+      - name: Secret scan
+        uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_CONFIG: gitleaks.toml
+          GITLEAKS_ENABLE_COMMENTS: "false"
+          GITLEAKS_VERSION: 8.30.1
+      - name: Full-history secret scan
+        run: gitleaks detect --source . --config gitleaks.toml --redact --no-banner
+      - name: Working tree guard
+        run: |
+          if [[ -n "$(git status --porcelain --untracked-files=no)" ]]; then
+            echo "Tracked files changed during CI execution."
+            git status --short
+            exit 1
+          fi
+      - name: Upload benchmark result
+        if: ${{ always() }}
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: benchmark-results-${{ github.run_id }}
+          if-no-files-found: warn
+          retention-days: 14
+          path: artifacts/benchmark.json
+      - name: Upload failure artifacts
+        if: ${{ failure() || cancelled() }}
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: ci-failure-artifacts-${{ github.run_id }}
+          if-no-files-found: warn
+          retention-days: 14
+          path: |
+            artifacts/**
+            .coverage
+            dist/**

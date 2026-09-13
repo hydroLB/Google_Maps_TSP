@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+root="$(git rev-parse --show-toplevel)"
+py="$("${root}/scripts/bootstrap_venv.sh")"
+
+exec "${py}" -m pre_commit run --config "${root}/.pre-commit-config.yaml" --hook-stage pre-commit --files "$@"

@@ -1,0 +1,66 @@
+[build-system]
+requires = ["setuptools==83.0.0", "wheel==0.47.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fastest-route-optimizer"
+version = "0.1.0"
+description = "Typed Tkinter desktop app for optimizing multi-stop Google Maps routes."
+readme = "README.md"
+requires-python = ">=3.11,<3.12"
+authors = [{ name = "Liam Samson" }]
+keywords = ["google-maps", "route-optimization", "tsp", "tkinter"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Environment :: MacOS X",
+  "Intended Audience :: End Users/Desktop",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Typing :: Typed",
+]
+dependencies = ["requests==2.33.0"]
+
+[project.scripts]
+fastest-route = "fastest_route.entrypoint:cli"
+
+[project.urls]
+Repository = "https://github.com/hydroLB/Google_Maps_TSP"
+Issues = "https://github.com/hydroLB/Google_Maps_TSP/issues"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "C4", "SIM", "TCH"]
+ignore = ["E501"]
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+known-first-party = ["fastest_route", "TSP_GOOGLE_MAPS"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+disallow_any_unimported = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_return_any = true
+no_implicit_optional = true
+explicit_package_bases = true
+mypy_path = "typings:TSP_GOOGLE_MAPS"
+files = ["TSP_GOOGLE_MAPS"]
+
+[tool.pytest.ini_options]
+addopts = "--strict-markers --benchmark-disable --cov=TSP_GOOGLE_MAPS/fastest_route --cov-report=term-missing --cov-fail-under=90"
+python_files = ["test_*.py"]
+testpaths = ["tests"]
+
+[tool.coverage.run]
+branch = true
+source = ["TSP_GOOGLE_MAPS/fastest_route"]
+omit = ["TSP_GOOGLE_MAPS/fastest_route/presentation/*"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true

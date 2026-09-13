@@ -1,0 +1,206 @@
+<svg width="1200" height="430" viewBox="0 0 1200 430" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Fastest Route Optimizer runtime flow</title>
+  <desc id="desc">Architecture diagram showing routing matrix access through core-owned ports and direct presentation access to the selected geocoding and autocomplete client.</desc>
+  <style>
+    :root {
+      --bg: #0c1320;
+      --panel: #101b2d;
+      --panel-2: #152237;
+      --border: #2a3a51;
+      --border-strong: #4b5f7c;
+      --text: #e8eef7;
+      --muted: #aab5c6;
+      --hint: #9dabc0;
+      --primary: #3a72c2;
+      --success: #62d4a5;
+      --working: #f0c566;
+    }
+
+    text {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      fill: var(--text);
+    }
+
+    .title { font-size: 18px; font-weight: 800; }
+    .label { font-size: 14px; font-weight: 800; }
+    .small { font-size: 12px; fill: var(--muted); }
+    .tiny { font-size: 11px; fill: var(--hint); }
+    .mono { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; font-size: 12px; }
+
+    .card {
+      fill: var(--panel);
+      stroke: var(--border-strong);
+      stroke-width: 1.4;
+      filter: url(#shadow);
+    }
+
+    .card-soft {
+      fill: var(--panel-2);
+      stroke: var(--border);
+      stroke-width: 1.1;
+    }
+
+    .line {
+      stroke: #4b5f7c;
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      marker-end: url(#arrow);
+    }
+
+    .active {
+      stroke: url(#pulseGradient);
+      stroke-width: 4;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: 18 14;
+      animation: move 1.8s linear infinite;
+      marker-end: url(#arrowActive);
+      filter: url(#glow);
+    }
+
+    .beacon {
+      fill: var(--success);
+      animation: beacon 2.6s ease-in-out infinite;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+
+    .chip {
+      fill: #1b2a41;
+      stroke: #33527e;
+      stroke-width: 1;
+    }
+
+    @keyframes move {
+      to { stroke-dashoffset: -32; }
+    }
+
+    @keyframes beacon {
+      0%, 100% { opacity: .55; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.45); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .active, .beacon { animation: none !important; }
+    }
+  </style>
+
+  <defs>
+    <linearGradient id="bgFill" x1="0" y1="0" x2="1200" y2="430" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#08111f"/>
+      <stop offset=".55" stop-color="#0c1320"/>
+      <stop offset="1" stop-color="#101b2d"/>
+    </linearGradient>
+    <linearGradient id="pulseGradient" x1="120" y1="0" x2="1080" y2="0" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#84b7ff"/>
+      <stop offset=".5" stop-color="#62d4a5"/>
+      <stop offset="1" stop-color="#f0c566"/>
+    </linearGradient>
+    <filter id="shadow" x="-12%" y="-22%" width="124%" height="144%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#000814" flood-opacity=".4"/>
+    </filter>
+    <filter id="glow" x="-15%" y="-60%" width="130%" height="220%">
+      <feDropShadow dx="0" dy="0" stdDeviation="5" flood-color="#62d4a5" flood-opacity=".62"/>
+    </filter>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L8,3 z" fill="#4b5f7c"/>
+    </marker>
+    <marker id="arrowActive" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L8,3 z" fill="#62d4a5"/>
+    </marker>
+    <pattern id="grid" width="36" height="36" patternUnits="userSpaceOnUse">
+      <path d="M 36 0 L 0 0 0 36" stroke="#1b2a41" stroke-width="1" opacity=".35"/>
+    </pattern>
+  </defs>
+
+  <rect width="1200" height="430" rx="18" fill="url(#bgFill)"/>
+  <rect width="1200" height="430" rx="18" fill="url(#grid)" opacity=".55"/>
+
+  <text x="56" y="56" class="title">Runtime Flow</text>
+  <text x="56" y="80" class="small">Routing matrices cross core-owned ports; address lookup stays at the presentation boundary.</text>
+
+  <g>
+    <rect x="56" y="118" width="205" height="94" rx="10" class="card"/>
+    <circle cx="84" cy="148" r="8" class="beacon"/>
+    <text x="104" y="153" class="label">Presentation</text>
+    <text x="78" y="181" class="small">Tkinter RouteApp</text>
+    <text x="78" y="199" class="tiny">controllers, dialogs, CSV export</text>
+  </g>
+
+  <g>
+    <rect x="56" y="258" width="205" height="94" rx="10" class="card-soft"/>
+    <text x="78" y="293" class="label">Config</text>
+    <text x="78" y="321" class="small">validated AppConfig</text>
+    <text x="78" y="339" class="tiny">theme, limits, retry, cache</text>
+  </g>
+
+  <g>
+    <rect x="346" y="118" width="205" height="94" rx="10" class="card"/>
+    <circle cx="374" cy="148" r="8" class="beacon" style="animation-delay:.25s"/>
+    <text x="394" y="153" class="label">Core Routing</text>
+    <text x="368" y="181" class="small">RoutingService</text>
+    <text x="368" y="199" class="tiny">RouteRequest -> RouteResult</text>
+  </g>
+
+  <g>
+    <rect x="346" y="258" width="205" height="94" rx="10" class="card-soft"/>
+    <text x="368" y="293" class="label">TspSolver</text>
+    <text x="368" y="321" class="small">exact for small routes</text>
+    <text x="368" y="339" class="tiny">nearest neighbor + two-opt above threshold</text>
+  </g>
+
+  <g>
+    <rect x="636" y="118" width="205" height="94" rx="10" class="card"/>
+    <circle cx="664" cy="148" r="8" class="beacon" style="animation-delay:.5s"/>
+    <text x="684" y="153" class="label">Ports</text>
+    <text x="658" y="181" class="small">RouteMatrixPort</text>
+    <text x="658" y="199" class="tiny">RouteCachePort</text>
+  </g>
+
+  <g>
+    <rect x="636" y="258" width="205" height="94" rx="10" class="card-soft"/>
+    <text x="658" y="293" class="label">Observability</text>
+    <text x="658" y="321" class="small">structured logs</text>
+    <text x="658" y="339" class="tiny">correlation context, metrics hooks</text>
+  </g>
+
+  <g>
+    <rect x="926" y="86" width="218" height="94" rx="10" class="card"/>
+    <circle cx="954" cy="116" r="8" class="beacon" style="animation-delay:.75s"/>
+    <text x="974" y="121" class="label">Google Maps</text>
+    <text x="948" y="149" class="small">Matrix + address client</text>
+    <text x="948" y="167" class="tiny">live Google Maps or offline demo</text>
+  </g>
+
+  <g>
+    <rect x="926" y="218" width="218" height="94" rx="10" class="card-soft"/>
+    <text x="948" y="253" class="label">Local Cache</text>
+    <text x="948" y="281" class="small">distance, geocode, route</text>
+    <text x="948" y="299" class="tiny">bounded size and TTL settings</text>
+  </g>
+
+  <g>
+    <rect x="926" y="350" width="218" height="46" rx="10" class="chip"/>
+    <text x="948" y="379" class="mono">Google Maps link + CSV</text>
+  </g>
+
+  <path d="M261 165 H346" class="line"/>
+  <path d="M261 136 C470 92 730 82 926 112" class="line"/>
+  <path d="M551 165 H636" class="line"/>
+  <path d="M841 144 H926" class="line"/>
+  <path d="M841 184 C872 184 895 265 926 265" class="line"/>
+  <path d="M738 212 V258" class="line"/>
+  <path d="M448 212 V258" class="line"/>
+  <path d="M1035 312 V350" class="line"/>
+  <path d="M261 305 H346" class="line"/>
+  <path d="M261 165 H346 H551 H636 H841 C876 165 893 116 926 116" class="active"/>
+  <path d="M636 184 C598 242 558 293 551 305 C528 343 479 350 448 352 C393 354 336 333 261 305" class="active" style="animation-delay:.35s"/>
+
+  <text x="292" y="143" class="tiny">validated request</text>
+  <text x="570" y="98" class="tiny">direct geocode + autocomplete</text>
+  <text x="574" y="143" class="tiny">matrix port</text>
+  <text x="866" y="106" class="tiny">bounded IO</text>
+  <text x="476" y="245" class="tiny">algorithm selection</text>
+  <text x="860" y="257" class="tiny">cache reuse</text>
+</svg>

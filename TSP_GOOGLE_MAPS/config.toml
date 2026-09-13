@@ -1,0 +1,60 @@
+[app]
+environment = "dev"
+
+[google_maps]
+api_key = ""
+distance_matrix_url = "https://maps.googleapis.com/maps/api/distancematrix/json"
+geocode_url = "https://maps.googleapis.com/maps/api/geocode/json"
+places_autocomplete_url = "https://maps.googleapis.com/maps/api/place/autocomplete/json"
+# When true and optimize_for="time" with mode="driving", use traffic-aware durations.
+traffic_aware_time = false
+# Google Distance Matrix departure_time parameter: "now" or Unix seconds.
+departure_time = "now"
+# Google traffic model used when traffic_aware_time=true.
+traffic_model = "best_guess"
+
+[cache]
+disk_path = "~/.cache/fastest_route/distance_cache.json"
+route_cache_size = 200
+disk_cache_ttl_seconds = 86400
+# In-memory geocode cache size. This reduces repeated validation and request-building geocodes.
+geocode_cache_size = 500
+# Optional: persist geocode results to disk. Leaving this blank disables disk geocode caching.
+# Note: enabling this stores addresses on disk.
+geocode_disk_path = ""
+geocode_disk_cache_ttl_seconds = 86400
+
+[routing]
+max_exact = 7
+two_opt_max_passes = 8
+nearest_neighbor_start_index = 0
+default_mode = "driving"
+default_optimize_for = "time"
+max_compute_seconds = 60.0
+
+[http]
+timeout_seconds = 10.0
+retry_max_attempts = 3
+retry_base_delay_seconds = 0.4
+retry_max_delay_seconds = 6.0
+retry_jitter_ratio = 0.2
+retry_statuses = [429, 500, 502, 503, 504]
+
+[rate_limit]
+requests_per_second = 5.0
+burst = 10
+max_wait_seconds = 10.0
+
+[logging]
+level = "INFO"
+
+[ui]
+min_stops = 3
+max_stops = 7
+autocomplete_min_chars = 3
+autocomplete_delay_ms = 300
+status_delay_ms = 600
+# Theme mode for the GUI: "auto"/"system" follows OS settings, or force "light"/"dark".
+theme_mode = "auto"
+# Poll interval for OS theme changes when theme_mode is auto/system.
+os_theme_poll_seconds = 2.0
